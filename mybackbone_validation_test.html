@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html>
+<head>
+	
+<script src="jquery-1.12.4.min.js"></script>
+<script src="underscore-min.js"></script>
+<script src="backbone-min.js"></script>
+<style type="text/css">
+@import url('http://getbootstrap.com/dist/css/bootstrap.css');
+
+{
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+html,body {
+        
+        background-color: #34495e;
+     
+       	 }
+   #all
+    {
+    	
+    	max-width: 1140px;
+    	margin: 0px auto;
+    	padding-top: 200px;
+
+    }
+    label.control-label
+    {
+    	font-size: 160%;
+    	color:#ecf0f1;
+    	padding: 0;
+    	width: 30%;
+    }
+    .btn
+    {
+    	font-size: 130%;
+
+    }
+    .form-horizontal
+    {
+    	width:100%;
+    	margin: 10px auto;
+    	
+    }
+    h1
+    {
+    	width:20%;
+    	font-size: 400%;
+    	color:#ecf0f1;
+    	margin: 10px auto;
+    	padding-bottom: 20px;
+    }
+    .form-group
+    {
+    	
+    	margin: 0;
+    	padding-bottom: 20px;
+    }
+   
+    .form-control
+    {
+    	width: 180%;
+    }
+    div.btnobj
+    {
+    	padding: 0;
+    	margin: 0;
+    	text-align: center;
+    	margin-left: 3%;
+    }
+    span.help-block
+    {
+    	width: 200%;
+    }
+
+    #container
+    {
+    	width: 20%;
+    	margin: 50px auto;
+    	border
+    }
+
+    span.result{
+    	font-size: 160%;
+    	color:#ecf0f1;
+    	margin-top: 20px;
+    	padding: 0;
+    	width: 30%;
+    }
+    #record
+    {
+    	border:5px dashed #ecf0f1;
+    	padding: 20px;
+    	margin-bottom: 5px;
+    }
+</style>
+</head>
+<body>
+
+<div id="all">
+<h1>Mr M&K</h1>
+	<form  id="form" class="form-horizontal" role="form">
+		<div class="form-group">
+			<label class="col-lg-2 control-label">First Name</label>
+			<div class="col-lg-3">
+				<input  class="form-control" type="text" name="firstname" id="firstname"
+				/>
+				<span class="help-block hidden"></span>
+			</div>
+		</div>
+
+
+		<div class="form-group">
+			<label class="col-lg-2 control-label">Last Name</label>
+			<div class="col-lg-3">
+				<input  class="form-control" type="text" name="lastname" id="lastname"
+				/>
+				<span class="help-block hidden"></span>
+			</div>
+		</div>
+
+		<div class="form-group">
+			<label for="password"  class="col-lg-2 control-label">Password</label>
+			<div class="col-lg-3">
+				<input class="form-control" id="password" name="password"
+					type="password"> <span class="help-block hidden"></span>
+			</div>
+		</div>
+
+		
+
+
+		<div class="form-group">
+			<label for="repeatPassword" class="col-lg-2 control-label">Confirm Password</label>
+			<div class="col-lg-2">
+				<input class="form-control" id="repeatPassword"
+					name="repeatPassword" type="password"> <span
+					class="help-block hidden"></span>
+			</div>
+		</div>
+
+
+
+		<div class="form-group">
+			<label for="country" class="col-lg-2 control-label">Country</label>
+			<div class="col-lg-3">
+				<select class="form-control" id="country" name="country">
+					<option value="" selected="selected">PLEASE SELECT A COUNTRY</option>
+					<option value="UNITED STATE">UNITIED STATE</option>
+					<option value="ENGLAND">ENGLAND</option>	
+				</select>								
+					<span class="help-block hidden"></span>
+			</div>
+		</div>
+
+
+		<div class="form-group">
+			<div class="btnobj col-lg-offset-2 col-lg-8">
+				<button id="signUpButton" class="btn btn-danger">Register</button>
+			</div>
+		</div>
+	</form>
+</div>
+
+<div id="container"></div>
+	<script>
+	
+
+	var SignUpModel=Backbone.Model.extend({
+
+			defaults:
+			{
+				firstname: '',
+				lastname:'',
+				password:'',
+				repeatPassword:'',
+				country:'',
+				submit:false
+			},
+			validate: function(attr)
+			{
+				this.datavalidation($('#firstname'),attr.firstname,attr.submit);
+
+				this.datavalidation($('#lastname'),attr.lastname,attr.submit);
+
+				this.datavalidation($('#password'),(attr.password && attr.password.length>=6),attr.submit);
+				this.datavalidation($('#repeatPassword'),(attr.repeatPassword && attr.repeatPassword==attr.password),attr.submit);
+				this.datavalidation($('#country'),attr.country,attr.submit);
+			
+			},
+			datavalidation:function($el,$valid,$submit)
+			{
+				
+				var $group = $el.closest('.form-group');
+				var $pwd='';
+
+				if(($el.prop('id')=="password"))
+				{
+					$pwd=" length must be greater than 5.";
+					
+				}
+				else if(($el.prop('id')=="repeatPassword"))
+				{
+					$pwd=" need to be match password.";
+				}
+				else if($el.prop('id')=="country")
+				{
+					$pwd=" option need to be selected.";
+				}
+				else
+				{
+					$pwd=' can\'t be null.';
+				}
+				
+				if(!$valid)
+				{
+					if(!$submit)
+					{
+						if($el.is(':focus'))
+						{
+
+							$group.addClass('has-error');
+
+
+							$group.find('.help-block').html($el.prop('id').toUpperCase()+$pwd).removeClass(
+								'hidden');
+						}
+						else
+						{
+							$group.removeClass('has-error');
+							$group.find('.help-block').html("").addClass(
+								'hidden');
+						}
+					}
+					else
+					{
+						$group.addClass('has-error');
+						$group.find('.help-block').html($el.prop('id').toUpperCase()+$pwd).removeClass(
+								'hidden');
+					}
+					
+				}
+				else 
+				{
+					$group.removeClass('has-error');
+					$group.find('.help-block').html("").addClass(
+								'hidden');
+					
+				}
+			}
+			});
+
+	
+				var SignUpList=Backbone.Collection.extend(
+					{
+						model:SignUpModel
+					});
+
+				var SignUpView=Backbone.View.extend({
+					model:SignUpModel,
+					tagName:'div',
+					id:'record',
+					initialize: function()
+					{
+						this.template=_.template($('#signup-template').html());
+
+					},
+					render:function()
+					{
+						
+						this.$el.html(this.template(this.model.toJSON()));
+						return this;
+					}
+				});
+			var signUpList=new SignUpList();
+
+			var SignUpsView=Backbone.View.extend({
+
+					model:SignUpList,
+					el:$('#container'),
+					initialize:function()
+					{
+						this.model.on('add',this.render,this);
+					},
+					render:function()
+					{
+						var self=this;
+						this.$el.html('');
+						_.each(this.model.toArray(),function(tweet,i)
+							{
+								self.$el.append(new SignUpView({model:tweet}).render().$el);
+							});
+						return this;
+					}
+				});
+
+			$(document).ready(function()
+				{
+				
+					var signUpModel=new SignUpModel();
+					var view=new SignUpsView({model:signUpList});
+					$('#form').submit(function(e)
+						{
+							
+							 e.preventDefault();
+							
+							signUpModel.set({firstname:$('#firstname').val(),
+								lastname:$('#lastname').val(),
+								password:$('#password').val(),
+								repeatPassword:$('#repeatPassword').val(),
+								country:$('#country option:checked').val(),
+								submit:true},{validate:true});
+							
+
+							if(signUpModel.get('firstname')!=''&&
+								signUpModel.get('lastname')!='' && signUpModel.get('password').length>=6
+								&&signUpModel.get('repeatPassword')==signUpModel.get('password')
+								&& signUpModel.get('country')!='')
+							{
+										
+							
+								var s=new SignUpModel({firstname:signUpModel.get('firstname'),
+									lastname:signUpModel.get('lastname'),
+									password:signUpModel.get('password'),
+									country:signUpModel.get('country')});
+									
+								 signUpList.add(s);
+								
+							 	view=new SignUpsView({model:signUpList});
+								// console.log(signUpList);
+								alert('Successful!!!');
+							}
+							
+							
+						});
+
+					
+
+					//jquery $('classname').prop("id/tagName");
+
+					$('input').keyup(function()
+						{
+							//signUpModel=new SignUpModel();
+							signUpModel.set({firstname:$('#firstname').val(),
+								lastname:$('#lastname').val(),
+								password:$('#password').val(),
+								repeatPassword:$('#repeatPassword').val(),
+								country:$('#country option:checked').val(),
+								submit:false},{validate:true});
+							
+							
+						});
+
+
+
+					
+
+					
+
+				});
+
+
+						
+
+		
+
+		
+
+
+	</script>
+
+	<script type="text/template" id="signup-template">
+		<span  class="result" id="firstname">FIRST NAME: <%= firstname %></span>
+		<br />
+		<br />
+		<span class="result" id="lastname">LAST NAME: <%= lastname %></span>
+		<br />
+		<br />
+		<span class="result" id="password">PASSWORD: <%= password %></span>
+		<br />
+		<br />
+		<span class="result" id="country">COUNTRY: <%= country %></span>
+		<br />
+		<br />
+	</script>
+</body>
+</html>
